@@ -1,23 +1,14 @@
-//Cordova.define可以理解是在Cordova框架中定义个TestPlugin名称的类。
+var cordova=require('cordova');
 
-　　　　cordova.define("com.junruihealthcare.plugins.TestMyPlugin.TestPlugin", function(require, exports, module) {
-                   
-                   　　 　 cordova.define("com.liki.plugins.testMyPlugin.TestPlugin", function(require, exports, module) {
-                                       
-                                       　　　　　//可以理解为Java中的构造方法，用于创建类的对象。
-                                       
-                                       　　　　function TestPlugin() {}
-                                       
-                                       　　　　　　//在类的prototype(原型)中定义一个函数。
-                                       
-                                       　　　　 TestPlugin.prototype.getDeviceMore  = function(onSuccessCallBack,errorCallBack,【其他参数可选】){
-                                       
-                                       　　　　　　//使用Cordova创建调用原生代码，最终会将下面参数拼接成URL，然后在原生中截获,后面的param1---3参数是可选，必须是以数组方式传入。
-                                       
-                                       　　  cordova.exec(onSuccessCallBack,errorCallBack,"CustomPlugin","getSystemVersionByParms",[param1,param2,param3]);
-                                       
-                                       　　} 
-                                       
-                                       //Cordova框架加载时初始化该类的对象。
-                                       
-                                       　　module.exports = new TestPlugin();});});
+var  JRCamera =function(){
+    
+    JRCamera.prototype.jrTakePhotos=function(success,error,str){
+        
+        cordova.exec(sucess,error,'JRCamera','jrTakePhotos',str)//'Echo'对应我们在java文件中定义的类名，echo对应我们在这个类中调用的自定义方法，str是我们客户端传递给这个方法的参数，是个数组
+        
+    }
+    
+}
+var  jrCamera=new JRCamera();
+
+module.exports=jrCamera;

@@ -1,44 +1,48 @@
-<?xml version="1.0" encoding="UTF-8"?>
-　　　　<plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
-    　　　　xmlns:android="http://schemas.android.com/apk/res/android"
-    　　　　id="com.junruihealthcare.CameraPlugin"<!-- 插件在工程中的唯一标识 -->
-    　　　　version="0.0.1"><!-- 插件版本 -->
-    
-    　　　　<name>CameraPlugin</name>
-    
-    　　　　<author>luliangliang</author><!-- 作者 -->
-    
-    　　　　<description>这是一个测试的插件.</description>
-    
-    　　　　<license>MIT</license>
-    　　　　　
-    
-    　　　　　<!-- 要链接的JS文件，一个文件使用一组<js-module> -->
-    　　　　<js-module src="www/JRcamera.js" name="JRcamera">
-        　　　　　　<clobbers target="JRcamera" />
-        　　　　</js-module>
+<?xml  version="1.0" encoding="UTF-8"?>
+
+<plugin  xmlns="http://apache.org/cordova/ns/plugins/1.0"
+    id="com.junruihealthcare.CameraPlugin"
+    version="0.0.1">
+    <name>CameraPlugin</name>
+    <description>Camera  Plugin</description>
+    <license>Apache 2.0</license>
+    <keywords>cordova,Camera</keywords>
     
     
+    <js-module src="www/JRcamera.js"  name="JRcamera">
+        <clobbers target="JRcamera"  />
+    </js-module>
     
-    　　　　<!-- 插件最低支持的Corodva框架版本，根据实际需求，如第一次可以使用默认的 -->
+    <!-- ios -->
+    <platform name="ios">
+        <config-file  target="config.xml" parent="/*">
+            <feature  name="JRcamera">
+                <param  name="ios-package"  value="com.junruihealthcare.JRCamera.JRcamera"/>
+            </feature>
+        </config-file>
+        
+        <source-file src="src/ios/JRCamera.m" />
+        <header-file src="src/ios/JRCamera.h" />
+        <source-file src="src/ios/Capture/WYCaptureController.m" />
+        <header-file src="src/ios/Capture/WYCaptureController.h" />
+        <source-file src="src/ios/Capture/WYTopImgBtn.m" />
+        <header-file src="src/ios/Capture/WYTopImgBtn.h" />
+        <source-file src="src/ios/Capture/WYVideoCaptureController.m" />
+        <header-file src="src/ios/Capture/WYVideoCaptureController.h" />
+        <source-file src="src/ios/Capture/WYVideoTimeView.m" />
+        <header-file src="src/ios/Capture/WYVideoTimeView.h" />
+        <source-file src="src/ios/Capture/Core/LX_layoutAttributes.m" />
+        <header-file src="src/ios/Capture/Core/LX_layoutAttributes.h" />
+        <source-file src="src/ios/Capture/Core/NSTimer+Addtion.m" />
+        <header-file src="src/ios/Capture/Core/NSTimer+Addtion.h" />
+        <source-file src="src/ios/Capture/Core/ProgressView.m" />
+        <header-file src="src/ios/Capture/Core/ProgressView.h" />
+        <source-file src="src/ios/Capture/Core/UIView+AutoLayoutViews.m" />
+        <header-file src="src/ios/Capture/Core/UIView+AutoLayoutViews.h" />
+        <source-file src="src/ios/Capture/Core/UIView+Extension.m" />
+        <header-file src="src/ios/Capture/Core/UIView+Extension.h" />
+    </platform>
     
-    　　　　<engines>
-        　　　　　　<engine name="cordova" version=">=3.0.0" />
-        　　　　</engines>
-    
-    　　　　<!-- 根据不同平台配置不同的原生源文件，下面以IOS为例 -->
-    　　　　<platform name="ios">
-        　　　　　　<config-file target="config.xml" parent="/*">
-            　　　　　　　　<!-- 替换插件类名 -->
-            　　　　　　　　<feature name="JRcamera">
-                　　　　　　　　　　<param name="ios-package" value="JRcamera"/>
-                　　　　　　　　</feature>
-            　　　　　　</config-file>
-        　　　　<!-- 引用插件的源文件，按照这种格式把所有的原生类的文件引入 -->
-        　　　　　　<source-file src="src/ios/JRCamera.m" />
-        　　　　　　<header-file src="src/ios/JRCamera.h" />
-        　　　　　　<!-- 引用插件的需要支持的框架，没有引用平台可以注释调 -->
-        　　　　　　<!-- <framework src="AudioToolbox.framework" weak="true" /> -->
-        　　　　</platform>
-    　　</plugin>
+</plugin>
+
 
