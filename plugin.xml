@@ -23,24 +23,24 @@
         
         <source-file src="src/ios/JRCamera.m" />
         <header-file src="src/ios/JRCamera.h" />
-        <source-file src="src/ios/Capture/WYCaptureController.m" />
-        <header-file src="src/ios/Capture/WYCaptureController.h" />
-        <source-file src="src/ios/Capture/WYTopImgBtn.m" />
-        <header-file src="src/ios/Capture/WYTopImgBtn.h" />
-        <source-file src="src/ios/Capture/WYVideoCaptureController.m" />
-        <header-file src="src/ios/Capture/WYVideoCaptureController.h" />
-        <source-file src="src/ios/Capture/WYVideoTimeView.m" />
-        <header-file src="src/ios/Capture/WYVideoTimeView.h" />
-        <source-file src="src/ios/Capture/Core/LX_layoutAttributes.m" />
-        <header-file src="src/ios/Capture/Core/LX_layoutAttributes.h" />
-        <source-file src="src/ios/Capture/Core/NSTimer+Addtion.m" />
-        <header-file src="src/ios/Capture/Core/NSTimer+Addtion.h" />
-        <source-file src="src/ios/Capture/Core/ProgressView.m" />
-        <header-file src="src/ios/Capture/Core/ProgressView.h" />
-        <source-file src="src/ios/Capture/Core/UIView+AutoLayoutViews.m" />
-        <header-file src="src/ios/Capture/Core/UIView+AutoLayoutViews.h" />
-        <source-file src="src/ios/Capture/Core/UIView+Extension.m" />
-        <header-file src="src/ios/Capture/Core/UIView+Extension.h" />
+        <source-file src="src/ios/WYCaptureController.m" />
+        <header-file src="src/ios/WYCaptureController.h" />
+        <source-file src="src/ios/WYTopImgBtn.m" />
+        <header-file src="src/ios/WYTopImgBtn.h" />
+        <source-file src="src/ios/WYVideoCaptureController.m" />
+        <header-file src="src/ios/WYVideoCaptureController.h" />
+        <source-file src="src/ios/WYVideoTimeView.m" />
+        <header-file src="src/ios/WYVideoTimeView.h" />
+        <source-file src="src/ios/LX_layoutAttributes.m" />
+        <header-file src="src/ios/LX_layoutAttributes.h" />
+        <source-file src="src/ios/NSTimer+Addtion.m" />
+        <header-file src="src/ios/NSTimer+Addtion.h" />
+        <source-file src="src/ios/ProgressView.m" />
+        <header-file src="src/ios/ProgressView.h" />
+        <source-file src="src/ios/UIView+AutoLayoutViews.m" />
+        <header-file src="src/ios/UIView+AutoLayoutViews.h" />
+        <source-file src="src/ios/UIView+Extension.m" />
+        <header-file src="src/ios/UIView+Extension.h" />
     </platform>
     
 </plugin>
