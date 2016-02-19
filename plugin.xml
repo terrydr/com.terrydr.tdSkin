@@ -17,7 +17,7 @@
     <platform name="ios">
         <config-file  target="config.xml" parent="/*">
             <feature  name="JRcamera">
-                <param  name="ios-package"  value="com.junruihealthcare.JRCamera.JRcamera"/>
+                <param  name="ios-package"  value="JRcamera"/>
             </feature>
         </config-file>
         
