@@ -9,17 +9,17 @@
 #import "WYVideoCaptureController.h"
 #import <AVFoundation/AVFoundation.h>
 #import <AssetsLibrary/AssetsLibrary.h>
-#import "WYTopImgBtn.h"
 #import "UIView+Extension.h"
 #import "WYVideoTimeView.h"
 #import "NSTimer+Addtion.h"
 #import "ProgressView.h"
 #import "UIView+AutoLayoutViews.h"
+//#import "MLSelectPhotoBrowserViewController.h"
 
 typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
 #define kAnimationDuration 0.2
 #define kTimeChangeDuration 0.1
-#define kVideoTotalTime 30
+#define kVideoTotalTime 10
 #define kVideoLimit 10
 
 @interface WYVideoCaptureController ()<AVCaptureFileOutputRecordingDelegate>
@@ -29,10 +29,6 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
     CGRect _rightBtnFrame;
     ///  视频录制到第几秒
     CGFloat _currentTime;
-    
-    AVPlayer *_player;
-    AVPlayerLayer *_playerLayer;
-    
     BOOL _isPhoto;
 }
 @property (nonatomic, strong) UIButton *closeBtn;
@@ -40,6 +36,7 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
 @property (nonatomic, strong) WYVideoTimeView *videoTimeView;
 @property (nonatomic, strong) UIView *viewContainer;
 @property (nonatomic, strong) UIImageView *imageView;
+@property (nonatomic, strong) UIButton *imageViewBtn;
 @property (nonatomic, strong) ProgressView *progressView;
 @property (nonatomic, strong) UILabel *dotLabel;
 @property (nonatomic, strong) UIButton *leftBtn;
@@ -47,13 +44,13 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
 @property (nonatomic, strong) UIButton *rightBtn;
 
 @property (nonatomic, strong) UIButton *cameraBtn;
-@property (nonatomic, strong) WYTopImgBtn *importBtn;
 @property (nonatomic, strong) NSTimer *timer;
 
-@property (nonatomic, strong) UIView *completeView;
 @property (nonatomic, strong) UIButton *retakeBtn;
 @property (nonatomic, strong) UIButton *submitBtn;
 
+//拍摄的照片数组
+@property (nonatomic, strong) NSMutableArray *tokenPicturesArr;
 /// 负责输入和输出设备之间数据传递
 @property (nonatomic, strong) AVCaptureSession *captureSession;
 /// 负责从AVCaptureDevice获取数据
@@ -83,11 +80,10 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
     [self setupCaptureView];
     self.view.backgroundColor = RGB(0x16161b);
 }
-/// 隐藏状态栏
-- (BOOL)prefersStatusBarHidden {
-    return YES;
+- (void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:YES];
+    self.navigationController.navigationBarHidden = YES;
 }
-
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     [_captureSession startRunning];
@@ -103,6 +99,13 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
     NSLog(@"我是拍照控制器,我被销毁了");
 }
 
+- (NSMutableArray *)tokenPicturesArr{
+    if (!_tokenPicturesArr) {
+        _tokenPicturesArr = [[NSMutableArray alloc] initWithCapacity:0];
+    }
+    return _tokenPicturesArr;
+}
+
 - (void)setupCaptureView {
     // 1.初始化会话
     _captureSession = [[AVCaptureSession alloc] init];
@@ -110,7 +113,7 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
         [_captureSession setSessionPreset:AVCaptureSessionPreset1280x720]; // 设置分辨率
     }
     // 2.获得输入设备
-    AVCaptureDevice *captureDevice = [self getCameraDeviceWithPosition:AVCaptureDevicePositionFront];
+    AVCaptureDevice *captureDevice = [self getCameraDeviceWithPosition:AVCaptureDevicePositionBack];
     if (captureDevice == nil) {
         NSLog(@"获取输入设备失败");
         return;
@@ -254,7 +257,7 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
     _videoTimeView.videoTime = 0;
     _currentTime = 0;
     _videoTimeView.hidden = NO;
-    _toggleBtn.hidden = YES;
+    //_toggleBtn.hidden = YES;
     [_timer resumeTimerAfterTimeInterval:kTimeChangeDuration];
 }
 /// 结束录制视频
@@ -262,17 +265,20 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
 /// @param outputFileURL 录制完成的视频的URL
 - (void)endVideoRecord:(NSURL *)outputFileURL {
     BOOL canPreview = _currentTime >= 10;
+    _progressView.currentTime = 0.0f;
     [self resetVideoRecordCanPreview:canPreview];
     
-    AVAsset *asset = [AVAsset assetWithURL:outputFileURL];
-    AVPlayerItem *playerItem = [AVPlayerItem playerItemWithAsset:asset];
-    _player = [AVPlayer playerWithPlayerItem:playerItem];
-    _playerLayer = [AVPlayerLayer playerLayerWithPlayer:_player];
-    _playerLayer.frame = _viewContainer.bounds;
-    _playerLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
-    [_viewContainer.layer addSublayer:_playerLayer];
-    [_player play];
-    _completeView.hidden = NO;
+    AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:outputFileURL options:nil];
+    AVAssetImageGenerator *generateImg = [[AVAssetImageGenerator alloc] initWithAsset:asset];
+    generateImg.appliesPreferredTrackTransform = YES;    // 截图的时候调整到正确的方向
+    NSError *error = NULL;
+    CMTime time = CMTimeMake(0, 60);// 0.0为截取视频1.0秒处的图片，60为每秒60帧
+    CGImageRef refImg = [generateImg copyCGImageAtTime:time actualTime:NULL error:&error];
+    NSLog(@"error==%@, Refimage==%@", error, refImg);
+    
+    UIImage *FrameImage= [[UIImage alloc] initWithCGImage:refImg];
+    _imageView.image = FrameImage;
+    [self.tokenPicturesArr insertObject:FrameImage atIndex:0];
 }
 
 - (void)resetVideoRecordCanPreview:(BOOL)canPreview {
@@ -295,25 +301,22 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
     [self.view addSubview:_toggleBtn];
     [self.view addSubview:_videoTimeView];
     [self.view addSubview:_viewContainer];
-    [_viewContainer addSubview:_imageView];
+    [self.view addSubview:_imageView];
+    [self.view addSubview:_imageViewBtn];
     [self.view addSubview:_progressView];
     [self.view addSubview:_dotLabel];
     [self.view addSubview:_leftBtn];
     [self.view addSubview:_centerBtn];
     [self.view addSubview:_rightBtn];
     [self.view addSubview:_cameraBtn];
-    [self.view addSubview:_importBtn];
-    [self.view addSubview:_completeView];
     
-    _closeBtn.frame = CGRectMake(0, 10, 60, 30);
-    _toggleBtn.frame = CGRectMake(APP_WIDTH - 60, 10, 60, 30);
-    _videoTimeView.frame = CGRectMake((APP_WIDTH - 50) * 0.5, 15, 50, 24);
-    _viewContainer.frame = CGRectMake(0, 44, APP_WIDTH, APP_WIDTH);
-    _imageView.frame = _viewContainer.bounds;
+    _closeBtn.frame = CGRectMake(0, 20, 60, 44);
+    _toggleBtn.frame = CGRectMake(APP_WIDTH - 60, 20, 60, 44);
+    _videoTimeView.frame = CGRectMake((APP_WIDTH - 50) * 0.5, 20, 50, 44);
+    _viewContainer.frame = CGRectMake(0, 64, APP_WIDTH, APP_WIDTH);
     _progressView.frame = CGRectMake(0, CGRectGetMaxY(_viewContainer.frame), APP_WIDTH, 5);
-    _completeView.frame = CGRectMake(0, CGRectGetMaxY(_progressView.frame), APP_WIDTH, APP_HEIGHT - CGRectGetMaxY(_progressView.frame));
-    _dotLabel.frame = CGRectMake((APP_WIDTH - 5) * 0.5, APP_WIDTH + 60 , 5, 5);
-    CGFloat btnW = 40;
+    _dotLabel.frame = CGRectMake((APP_WIDTH - 5) * 0.5, APP_WIDTH + 80 , 5, 5);
+    CGFloat btnW = 45;
     CGFloat leftBtnX = (APP_WIDTH - 3 * btnW - 2 * 32) *0.5;
     CGFloat leftBtnY = CGRectGetMaxY(_dotLabel.frame) + 6;
     
@@ -322,88 +325,84 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
     _rightBtnFrame = CGRectOffset(_centerBtnFrame, 32 + btnW, 0);
     [self restoreBtn];
     _cameraBtn.frame = CGRectMake((APP_WIDTH - 67) * 0.5, CGRectGetMaxY(_centerBtnFrame) + 32, 67, 67);
-    _importBtn.frame = CGRectMake(CGRectGetMaxX(_cameraBtn.frame) + 25, _cameraBtn.y, 100, 60);
+    _imageView.frame = CGRectMake(20, CGRectGetMaxY(_centerBtnFrame) + 32, 60, 60);
+    _imageViewBtn.frame = _imageView.frame;
 }
+
 - (void)prepareUI {
     _closeBtn = [[UIButton alloc] init];
-    [_closeBtn setImage:[UIImage imageNamed:@"button_camera_close"] forState:UIControlStateNormal];
+    [_closeBtn setTitle:@"取消" forState:UIControlStateNormal];
     [_closeBtn addTarget:self action:@selector(closeBtnClick) forControlEvents:UIControlEventTouchUpInside];
     
     _toggleBtn = [[UIButton alloc] init];
-    [_toggleBtn setImage:[UIImage imageNamed:@"button_camera_CUT"] forState:UIControlStateNormal];
-    [_toggleBtn addTarget:self action:@selector(toggleBtnClick) forControlEvents:UIControlEventTouchUpInside];
+    [_toggleBtn setTitle:@"完成" forState:UIControlStateNormal];
+    [_toggleBtn addTarget:self action:@selector(closeBtnClick) forControlEvents:UIControlEventTouchUpInside];
     
     _videoTimeView = [[WYVideoTimeView alloc] init];
     _videoTimeView.hidden = YES;
     
     _viewContainer = [[UIView alloc] init];
     _imageView = [[UIImageView alloc] init];
-    _imageView.hidden = YES;
+    _imageView.contentMode = UIViewContentModeScaleAspectFill;
+    _imageView.layer.masksToBounds = YES;
+    
+    _imageViewBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    [_imageViewBtn addTarget:self
+                      action:@selector(imageViewBtnClick:)
+            forControlEvents:UIControlEventTouchUpInside];
     
     _progressView = [[ProgressView alloc] initWithFrame:CGRectMake(0, APP_WIDTH + 44, APP_WIDTH, 5)];
     _progressView.totalTime = kVideoTotalTime;
     
-    _dotLabel = [UILabel new];  // 5 - 5
+    _dotLabel = [[UILabel alloc] init];  // 5 - 5
     _dotLabel.layer.cornerRadius = 2.5;
     _dotLabel.clipsToBounds = YES;
     _dotLabel.backgroundColor = RGB(0xffc437);
     
-    _leftBtn = [UIButton new];
+    _leftBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     [_leftBtn setTitle:@"照片" forState:UIControlStateNormal];
     [_leftBtn setTitleColor:RGB(0xfefeff) forState:UIControlStateNormal];
     _leftBtn.titleLabel.font = [UIFont systemFontOfSize:15.0];
     [_leftBtn addTarget:self action:@selector(leftBtnClick:) forControlEvents:UIControlEventTouchUpInside];
-    _centerBtn = [UIButton new];
+    _centerBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     [_centerBtn setTitleColor:RGB(0xffc437) forState:UIControlStateNormal];
     [_centerBtn setTitle:@"照片" forState:UIControlStateNormal];
     _centerBtn.titleLabel.font = [UIFont systemFontOfSize:15.0];
-    _rightBtn = [UIButton new];
-    [_rightBtn setTitle:@"MV" forState:UIControlStateNormal];
+    _rightBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    [_rightBtn setTitle:@"短视频" forState:UIControlStateNormal];
     [_rightBtn setTitleColor:RGB(0xfefeff) forState:UIControlStateNormal];
     _rightBtn.titleLabel.font = [UIFont systemFontOfSize:15.0];
     [_rightBtn addTarget:self action:@selector(rightBtnClick:) forControlEvents:UIControlEventTouchUpInside];
     
-    _cameraBtn = [UIButton new];
+    _cameraBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     [_cameraBtn setImage:[UIImage imageNamed:@"button_camera_screen"] forState:UIControlStateNormal];
     [_cameraBtn addTarget:self action:@selector(cameraBtnClick:) forControlEvents:UIControlEventTouchUpInside];
-    
-    _importBtn = [[WYTopImgBtn alloc] init];
-    [_importBtn setImage:[UIImage imageNamed:@"icon_gallery_photo_import"] forState:UIControlStateNormal];
-    [_importBtn setTitle:@"导入照片" forState:UIControlStateNormal];
-    [_importBtn setTitleColor:RGB(0xfefeff) forState:UIControlStateNormal];
-    _importBtn.titleLabel.font = [UIFont systemFontOfSize:13.0];
-    [_importBtn addTarget:self action:@selector(importBtnClick) forControlEvents:UIControlEventTouchUpInside];
+    [_cameraBtn addTarget:self action:@selector(cameraBtnTouchDown:) forControlEvents:UIControlEventTouchDown];
 }
 
 - (void)prepareCompleteView {
-    _completeView = [UIView new];
-    _completeView.backgroundColor = RGB(0x16161b);
-    _completeView.hidden = YES; // 默认隐藏
     
-    _retakeBtn = [UIButton new];
+    _retakeBtn = [[UIButton alloc] init];
     [_retakeBtn setTitle:@"重拍" forState:UIControlStateNormal];
     [_retakeBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     _retakeBtn.titleLabel.font = [UIFont boldSystemFontOfSize:16.0];
     [_retakeBtn addTarget:self action:@selector(retakeBtnClick:) forControlEvents:UIControlEventTouchUpInside];
     
-    _submitBtn = [UIButton new];
+    _submitBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     [_submitBtn setImage:[UIImage imageNamed:@"button_screen_complete_submit"] forState:UIControlStateNormal];
     [_submitBtn setImage:[UIImage imageNamed:@"button_screen_complete_submit_click"] forState:UIControlStateHighlighted];
     [_submitBtn addTarget:self action:@selector(submitBtnClick:) forControlEvents:UIControlEventTouchUpInside];
-    
-    [_completeView addSubview:_retakeBtn];
-    [_completeView addSubview:_submitBtn];
-    
-    [_submitBtn lx_InnerLayoutForType:LXLayoutInnerTypeCenter referedView:_completeView offset:CGPointZero];
-    [_retakeBtn lx_InnerLayoutForType:LXLayoutInnerTypeLeftCenter referedView:_completeView size:CGSizeMake(60, 44) offset:CGPointMake(50, 0)];
 }
 
 #pragma mark - ButtonClick
+-(void)imageViewBtnClick:(UIButton *)btn{
+//    MLSelectPhotoBrowserViewController *browserVc = [[MLSelectPhotoBrowserViewController alloc] init];
+//    [browserVc setValue:@(YES) forKeyPath:@"isTrashing"];
+//    browserVc.currentPage = 0;
+//    browserVc.photos = self.tokenPicturesArr;
+//    [self.navigationController pushViewController:browserVc animated:YES];
+}
 - (void)retakeBtnClick:(UIButton *)btn {
-    [_playerLayer removeFromSuperlayer];
-    [_player pause];
-    _player = nil;
-    _completeView.hidden = YES;
     _toggleBtn.hidden = NO;
     [self videoTimeChanged:nil];
 }
@@ -414,31 +413,7 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
 - (void)closeBtnClick {
     [self dismissViewControllerAnimated:YES completion:nil];
 }
-/// 切换前后摄像头
-- (void)toggleBtnClick {
-    AVCaptureDevice *currentDevice = [_captureDeviceInput device];
-    AVCaptureDevicePosition currentPosition = currentDevice.position;
-    [self removeNotificationFromCaptureDevice:currentDevice];
-    AVCaptureDevice *toChangeDevice;
-    AVCaptureDevicePosition toChangeDevicePosition = AVCaptureDevicePositionBack;
-    if (currentPosition == AVCaptureDevicePositionUnspecified || currentPosition == toChangeDevicePosition) {
-        toChangeDevicePosition = AVCaptureDevicePositionFront;
-    }
-    // 1.获得要调整的设备输入对象
-    toChangeDevice = [self getCameraDeviceWithPosition:toChangeDevicePosition];
-    AVCaptureDeviceInput *captureDeviceInput = [[AVCaptureDeviceInput alloc] initWithDevice:toChangeDevice error:nil];
-    // 2.改变会话配置前一定要先开启配置,配置完成后提交配置改变
-    [_captureSession beginConfiguration];
-    // 3.移除原有的输入对象
-    [_captureSession removeInput:_captureDeviceInput];
-    // 4.添加新的输入对象
-    if ([_captureSession canAddInput:captureDeviceInput]) {
-        [_captureSession addInput:captureDeviceInput];
-        _captureDeviceInput = captureDeviceInput;
-    }
-    // 5.提交会话配置
-    [_captureSession commitConfiguration];
-}
+
 - (void)leftBtnClick:(UIButton *)btn {
     [_centerBtn setTitleColor:RGB(0xfefeff) forState:UIControlStateNormal];
     _dotLabel.hidden = YES;
@@ -468,32 +443,35 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
             NSData *imageData = [AVCaptureStillImageOutput jpegStillImageNSDataRepresentation:imageDataSampleBuffer];
             UIImage *image = [UIImage imageWithData:imageData];
             _imageView.image = [UIImage imageWithCGImage:[self handleImage:image]];
-            _imageView.hidden = NO;
+            [self.tokenPicturesArr insertObject:image atIndex:0];
         }];
-        return;
-    }
-    /// 视频
-    // 1.根据设备输出获得连接
-    AVCaptureConnection *captureConnection = [_captureMovieFileOutput connectionWithMediaType:AVMediaTypeVideo];
-    // 2.根据连接取得设备输出的数据
-    if (![_captureMovieFileOutput isRecording]) {
-        _enableRotation = NO;
-        // 2.1如果支持多任务则开始多任务
-        if ([[UIDevice currentDevice] isMultitaskingSupported]) {
-            _backgroundTaskIndentifier = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:nil];
+    }else{
+        /// 视频
+        if ([_captureMovieFileOutput isRecording]) {
+            [_captureMovieFileOutput stopRecording];
         }
-        // 2.2预览图层和视屏方向保持一致
-        captureConnection.videoOrientation = [_captureVideoPreviewLayer connection].videoOrientation;
-        NSString *outputFilePath = [NSTemporaryDirectory() stringByAppendingPathComponent:@"WYMovie.mov"];
-        NSURL *fileURL = [NSURL fileURLWithPath:outputFilePath];
-        [_captureMovieFileOutput startRecordingToOutputFileURL:fileURL recordingDelegate:self];
-    } else {
-        [_captureMovieFileOutput stopRecording];
     }
 }
 
-- (void)importBtnClick {
-    
+- (void)cameraBtnTouchDown:(UIButton *)btn{
+    if (!_isPhoto) {
+        /// 视频
+        // 1.根据设备输出获得连接
+        AVCaptureConnection *captureConnection = [_captureMovieFileOutput connectionWithMediaType:AVMediaTypeVideo];
+        // 2.根据连接取得设备输出的数据
+        if (![_captureMovieFileOutput isRecording]) {
+            _enableRotation = NO;
+            // 2.1如果支持多任务则开始多任务
+            if ([[UIDevice currentDevice] isMultitaskingSupported]) {
+                _backgroundTaskIndentifier = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:nil];
+            }
+            // 2.2预览图层和视屏方向保持一致
+            captureConnection.videoOrientation = [_captureVideoPreviewLayer connection].videoOrientation;
+            NSString *outputFilePath = [NSTemporaryDirectory() stringByAppendingPathComponent:@"WYMovie.mov"];
+            NSURL *fileURL = [NSURL fileURLWithPath:outputFilePath];
+            [_captureMovieFileOutput startRecordingToOutputFileURL:fileURL recordingDelegate:self];
+        }
+    }
 }
 
 #pragma mark - private
@@ -508,14 +486,16 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
 ///
 /// @param isPhoto YES->拍照  NO->视频录制
 - (void)ChangeToPhoto:(BOOL)isPhoto {
+    if (isPhoto &&_captureMovieFileOutput.isRecording) {
+        [_captureMovieFileOutput stopRecording];
+    }
     [self restoreBtn];
     _isPhoto = isPhoto;
-    NSString *centerTitle = isPhoto ? @"照片" : @"MV";
+    NSString *centerTitle = isPhoto ? @"照片" : @"短视频";
     [_centerBtn setTitle:centerTitle forState:UIControlStateNormal];
     _leftBtn.hidden = isPhoto;
     _rightBtn.hidden = !isPhoto;
     _progressView.hidden = isPhoto;
-    _importBtn.hidden = !isPhoto;
     
     UIImage *photoImage = [UIImage imageNamed:@"button_camera_screen"];
     UIImage *mvImage = [UIImage imageNamed:@"button_video_recording_default"];

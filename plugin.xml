@@ -51,6 +51,15 @@
         <header-file src="src/ios/UIView+AutoLayoutViews.h" />
         <source-file src="src/ios/UIView+Extension.m" />
         <header-file src="src/ios/UIView+Extension.h" />
+        <resource-file src="src/ios/button_camera_screen.png" />
+        <resource-file src="src/ios/button_camera_screen@2x.png" />
+        <resource-file src="src/ios/button_camera_screen@3x.png" />
+        <resource-file src="src/ios/button_video_recording_default.png" />
+        <resource-file src="src/ios/button_video_recording_default@2x.png" />
+        <resource-file src="src/ios/button_video_recording_default@3x.png" />
+        <resource-file src="src/ios/button_video_screen_stop.png" />
+        <resource-file src="src/ios/button_video_screen_stop@2x.png" />
+        <resource-file src="src/ios/button_video_screen_stop@3x.png" />
     </platform>
     
 </plugin>
