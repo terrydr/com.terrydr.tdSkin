@@ -1,19 +1,29 @@
-<?xml  version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 
-<plugin  xmlns="http://apache.org/cordova/ns/plugins/1.0"
-    id="com.junruihealthcare.CameraPlugin"
-    version="0.0.1">
-    <name>CameraPlugin</name>
-    <description>Camera  Plugin</description>
-    <license>Apache 2.0</license>
-    <keywords>cordova,Camera</keywords>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        id="cordova-plugin-jrcamera"
+        version="0.4.2">
     
+    <name>JRCamera</name>
     
-    <js-module src="www/JRcamera.js"  name="JRcamera">
-        <clobbers target="JRcamera"  />
+    <description>This plugin for Cordova and PhoneGap allows you to check if an app is installed. It requires an URI Scheme (iOS) or a Package Name (Android).</description>
+    
+    <keywords>Cordova,PhoneGap,plugin,app,availability,installed, URIScheme,URI,Scheme,PackageName,Package,Name,iOS,Android</keywords>
+    
+    <repo>https://github.com/ohh2ahh/AppAvailability.git</repo>
+    <issue>https://github.com/ohh2ahh/AppAvailability/issues</issue>
+    
+    <license>MIT</license>
+    
+    <engines>
+        <engine name="cordova" version=">=3.0.0" />
+    </engines>
+    
+    <js-module src="www/JRCamera.js" name="JRCamera">
+        <clobbers target="jrcamera" />
     </js-module>
     
-    <!-- ios -->
     <platform name="ios">
         <config-file  target="config.xml" parent="/*">
             <feature  name="JRcamera">
@@ -44,5 +54,3 @@
     </platform>
     
 </plugin>
-
-
