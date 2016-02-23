@@ -32,7 +32,7 @@
 
 - (void)takePhotosFinished:(NSNotification *)notify{
     NSDictionary *pathDic = notify.userInfo;
-    CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:pathDic];
+    CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:pathDic];
     [self.commandDelegate sendPluginResult:result callbackId:_callbackId];
 }
 
