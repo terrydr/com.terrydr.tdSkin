@@ -1,13 +1,12 @@
 var jrCamera = {
     
-jrTakePhotos: function(urlScheme, successCallback, errorCallback) {
+jrTakePhotos: function(successCallback, errorCallback) {
     console.log("invoked");
 	cordova.exec(
             successCallback,
             errorCallback,
             "JRCamera",
-            "jrTakePhotos",
-            [urlScheme]
+            "jrTakePhotos"
         );
 
 }
