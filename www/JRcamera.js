@@ -6,7 +6,8 @@ jrTakePhotos: function(successCallback, errorCallback) {
             successCallback,
             errorCallback,
             "JRCamera",
-            "jrTakePhotos"
+            "jrTakePhotos",
+	    []
         );
 
 }
