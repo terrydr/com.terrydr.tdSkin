@@ -414,6 +414,13 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
+- (void)takePhotosFinishClick{
+    NSDictionary *dic = [NSDictionary dictionaryWithObject:@"obj" forKey:@"key"];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"TakePhotosFinishedNotification"
+                                                        object:nil
+                                                      userInfo:dic];
+}
+
 - (void)leftBtnClick:(UIButton *)btn {
     [_centerBtn setTitleColor:RGB(0xfefeff) forState:UIControlStateNormal];
     _dotLabel.hidden = YES;
