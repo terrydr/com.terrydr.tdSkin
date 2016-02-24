@@ -30,6 +30,8 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
     ///  视频录制到第几秒
     CGFloat _currentTime;
     BOOL _isPhoto;
+    //视屏最少两秒
+    BOOL _isVideoValid;
 }
 @property (nonatomic, strong) UIButton *closeBtn;
 @property (nonatomic, strong) UIButton *toggleBtn;
@@ -268,17 +270,19 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
     _progressView.currentTime = 0.0f;
     [self resetVideoRecordCanPreview:canPreview];
     
-    AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:outputFileURL options:nil];
-    AVAssetImageGenerator *generateImg = [[AVAssetImageGenerator alloc] initWithAsset:asset];
-    generateImg.appliesPreferredTrackTransform = YES;    // 截图的时候调整到正确的方向
-    NSError *error = NULL;
-    CMTime time = CMTimeMake(0, 60);// 0.0为截取视频1.0秒处的图片，60为每秒60帧
-    CGImageRef refImg = [generateImg copyCGImageAtTime:time actualTime:NULL error:&error];
-    NSLog(@"error==%@, Refimage==%@", error, refImg);
-    
-    UIImage *FrameImage= [[UIImage alloc] initWithCGImage:refImg];
-    _imageView.image = FrameImage;
-    [self.tokenPicturesArr insertObject:FrameImage atIndex:0];
+    if (_isVideoValid) {
+        AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:outputFileURL options:nil];
+        AVAssetImageGenerator *generateImg = [[AVAssetImageGenerator alloc] initWithAsset:asset];
+        generateImg.appliesPreferredTrackTransform = YES;    // 截图的时候调整到正确的方向
+        NSError *error = NULL;
+        CMTime time = CMTimeMake(0, 60);// 0.0为截取视频1.0秒处的图片，60为每秒60帧
+        CGImageRef refImg = [generateImg copyCGImageAtTime:time actualTime:NULL error:&error];
+        NSLog(@"error==%@, Refimage==%@", error, refImg);
+        
+        UIImage *FrameImage= [[UIImage alloc] initWithCGImage:refImg];
+        _imageView.image = FrameImage;
+        [self.tokenPicturesArr insertObject:FrameImage atIndex:0];
+    }
 }
 
 - (void)resetVideoRecordCanPreview:(BOOL)canPreview {
@@ -286,7 +290,7 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
     [_cameraBtn setImage:[UIImage imageNamed:@"button_video_recording_default"] forState:UIControlStateNormal];
     _videoTimeView.hidden = YES;
     _currentTime = 0;
-    _toggleBtn.hidden = canPreview;
+    //_toggleBtn.hidden = canPreview;
     if (!canPreview) {
         [self videoTimeChanged:nil];
     }
@@ -403,7 +407,7 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
 //    [self.navigationController pushViewController:browserVc animated:YES];
 }
 - (void)retakeBtnClick:(UIButton *)btn {
-    _toggleBtn.hidden = NO;
+    //_toggleBtn.hidden = NO;
     [self videoTimeChanged:nil];
 }
 - (void)submitBtnClick:(UIButton *)btn {
@@ -455,14 +459,22 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
         }];
     }else{
         /// 视频
-        if ([_captureMovieFileOutput isRecording]) {
-            [_captureMovieFileOutput stopRecording];
+        [_captureMovieFileOutput stopRecording];
+        if (_currentTime<2.0f) {
+            _isVideoValid = NO;
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"提示"
+                                                            message:@"手指不要放开，视频最短为两秒"
+                                                           delegate:nil
+                                                  cancelButtonTitle:@"确定"
+                                                  otherButtonTitles:nil];
+            [alert show];
         }
     }
 }
 
 - (void)cameraBtnTouchDown:(UIButton *)btn{
     if (!_isPhoto) {
+        _isVideoValid = YES;
         /// 视频
         // 1.根据设备输出获得连接
         AVCaptureConnection *captureConnection = [_captureMovieFileOutput connectionWithMediaType:AVMediaTypeVideo];
