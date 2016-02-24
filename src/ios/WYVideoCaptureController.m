@@ -419,6 +419,7 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
     [[NSNotificationCenter defaultCenter] postNotificationName:@"TakePhotosFinishedNotification"
                                                         object:nil
                                                       userInfo:dic];
+    [self closeBtnClick];
 }
 
 - (void)leftBtnClick:(UIButton *)btn {
