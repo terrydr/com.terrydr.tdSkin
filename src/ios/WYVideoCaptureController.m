@@ -484,6 +484,7 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
         }];
     }else{
         /// 视频
+        _leftBtn.userInteractionEnabled = YES;
         if (!_isVideoRecordFinished) {
             if (_currentTime<2.0f) {
                 _isVideoValid = NO;
@@ -507,6 +508,7 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
     if (!_isPhoto) {
         _isVideoValid = YES;
         _isVideoRecordFinished = NO;
+        _leftBtn.userInteractionEnabled = NO;
         /// 视频
         // 1.根据设备输出获得连接
         AVCaptureConnection *captureConnection = [_captureMovieFileOutput connectionWithMediaType:AVMediaTypeVideo];
