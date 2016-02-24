@@ -484,16 +484,21 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
         }];
     }else{
         /// 视频
-        [_captureMovieFileOutput stopRecording];
-        if (_currentTime<2.0f && !_isVideoRecordFinished) {
-            _isVideoValid = NO;
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"提示"
-                                                            message:@"手指不要放开，视频最短为两秒"
-                                                           delegate:nil
-                                                  cancelButtonTitle:@"确定"
-                                                  otherButtonTitles:nil];
-            [alert show];
-            
+        if (!_isVideoRecordFinished) {
+            if (_currentTime<2.0f) {
+                _isVideoValid = NO;
+                [_captureMovieFileOutput stopRecording];
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"提示"
+                                                                message:@"手指不要放开，视频最短为两秒"
+                                                               delegate:nil
+                                                      cancelButtonTitle:@"确定"
+                                                      otherButtonTitles:nil];
+                [alert show];
+            }else{
+                if ([_captureMovieFileOutput isRecording]) {
+                    [_captureMovieFileOutput stopRecording];
+                }
+            }
         }
     }
 }
