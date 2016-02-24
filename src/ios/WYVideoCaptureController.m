@@ -31,6 +31,9 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
     ///  视频录制到第几秒
     CGFloat _currentTime;
     BOOL _isPhoto;
+    //视屏最少两秒
+    BOOL _isVideoValid;
+    NSString *_currentVideoPath;
 }
 @property (nonatomic, strong) UIButton *closeBtn;
 @property (nonatomic, strong) UIButton *toggleBtn;
@@ -52,6 +55,10 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
 
 //拍摄的照片数组
 @property (nonatomic, strong) NSMutableArray *tokenPicturesArr;
+//拍摄的照片路径数组
+@property (nonatomic, strong) NSMutableArray *tokenPicturesPathArr;
+//拍摄的视频路径数组
+@property (nonatomic, strong) NSMutableArray *tokenVideosPathArr;
 /// 负责输入和输出设备之间数据传递
 @property (nonatomic, strong) AVCaptureSession *captureSession;
 /// 负责从AVCaptureDevice获取数据
@@ -105,6 +112,20 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
         _tokenPicturesArr = [[NSMutableArray alloc] initWithCapacity:0];
     }
     return _tokenPicturesArr;
+}
+
+- (NSMutableArray *)tokenPicturesPathArr{
+    if (!_tokenPicturesPathArr) {
+        _tokenPicturesPathArr = [[NSMutableArray alloc] initWithCapacity:0];
+    }
+    return _tokenPicturesPathArr;
+}
+
+- (NSMutableArray *)tokenVideosPathArr{
+    if (!_tokenVideosPathArr) {
+        _tokenVideosPathArr = [[NSMutableArray alloc] initWithCapacity:0];
+    }
+    return _tokenVideosPathArr;
 }
 
 - (void)setupCaptureView {
@@ -269,17 +290,20 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
     _progressView.currentTime = 0.0f;
     [self resetVideoRecordCanPreview:canPreview];
     
-    AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:outputFileURL options:nil];
-    AVAssetImageGenerator *generateImg = [[AVAssetImageGenerator alloc] initWithAsset:asset];
-    generateImg.appliesPreferredTrackTransform = YES;    // 截图的时候调整到正确的方向
-    NSError *error = NULL;
-    CMTime time = CMTimeMake(0, 60);// 0.0为截取视频1.0秒处的图片，60为每秒60帧
-    CGImageRef refImg = [generateImg copyCGImageAtTime:time actualTime:NULL error:&error];
-    NSLog(@"error==%@, Refimage==%@", error, refImg);
-    
-    UIImage *FrameImage= [[UIImage alloc] initWithCGImage:refImg];
-    _imageView.image = FrameImage;
-    [self.tokenPicturesArr insertObject:FrameImage atIndex:0];
+    if (_isVideoValid) {
+        AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:outputFileURL options:nil];
+        AVAssetImageGenerator *generateImg = [[AVAssetImageGenerator alloc] initWithAsset:asset];
+        generateImg.appliesPreferredTrackTransform = YES;    // 截图的时候调整到正确的方向
+        NSError *error = NULL;
+        CMTime time = CMTimeMake(0, 60);// 0.0为截取视频1.0秒处的图片，60为每秒60帧
+        CGImageRef refImg = [generateImg copyCGImageAtTime:time actualTime:NULL error:&error];
+        NSLog(@"error==%@, Refimage==%@", error, refImg);
+        
+        UIImage *FrameImage= [[UIImage alloc] initWithCGImage:refImg];
+        _imageView.image = FrameImage;
+        [self.tokenPicturesArr insertObject:FrameImage atIndex:0];
+        [self.tokenVideosPathArr addObject:_currentVideoPath];
+    }
 }
 
 - (void)resetVideoRecordCanPreview:(BOOL)canPreview {
@@ -456,14 +480,23 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
         }];
     }else{
         /// 视频
-        if ([_captureMovieFileOutput isRecording]) {
-            [_captureMovieFileOutput stopRecording];
+        [_captureMovieFileOutput stopRecording];
+        if (_currentTime<2.0f) {
+            _isVideoValid = NO;
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"提示"
+                                                            message:@"手指不要放开，视频最短为两秒"
+                                                           delegate:nil
+                                                  cancelButtonTitle:@"确定"
+                                                  otherButtonTitles:nil];
+            [alert show];
+            
         }
     }
 }
 
 - (void)cameraBtnTouchDown:(UIButton *)btn{
     if (!_isPhoto) {
+        _isVideoValid = YES;
         /// 视频
         // 1.根据设备输出获得连接
         AVCaptureConnection *captureConnection = [_captureMovieFileOutput connectionWithMediaType:AVMediaTypeVideo];
@@ -490,6 +523,7 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
     NSString *filePath = [fileManage getJRMediaPathWithType:NO];
     NSString *videoName = [NSString stringWithFormat:@"%@.mov",videoId];
     NSString *videoPath = [NSString stringWithFormat:@"%@/%@",filePath,videoName];
+    _currentVideoPath = videoPath;
     return videoPath;
 }
 
@@ -504,6 +538,7 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
                                        contents:imgData
                                      attributes:nil];
     NSLog(@"result:%d",result);
+    [self.tokenPicturesPathArr addObject:imgPath];
 }
 
 #pragma mark - private
