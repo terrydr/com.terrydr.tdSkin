@@ -33,6 +33,8 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
     BOOL _isPhoto;
     //视屏最少两秒
     BOOL _isVideoValid;
+    //视频是否录制结束
+    BOOL _isVideoRecordFinished;
     NSString *_currentVideoPath;
 }
 @property (nonatomic, strong) UIButton *closeBtn;
@@ -221,6 +223,7 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
     _currentTime += kTimeChangeDuration;
     
     if (_currentTime > kVideoTotalTime) {
+        _isVideoRecordFinished = YES;
         if ([_captureMovieFileOutput isRecording]) {
             [_captureMovieFileOutput stopRecording];
         }
@@ -482,7 +485,7 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
     }else{
         /// 视频
         [_captureMovieFileOutput stopRecording];
-        if (_currentTime<2.0f) {
+        if (_currentTime<2.0f && !_isVideoRecordFinished) {
             _isVideoValid = NO;
             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"提示"
                                                             message:@"手指不要放开，视频最短为两秒"
@@ -498,6 +501,7 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
 - (void)cameraBtnTouchDown:(UIButton *)btn{
     if (!_isPhoto) {
         _isVideoValid = YES;
+        _isVideoRecordFinished = NO;
         /// 视频
         // 1.根据设备输出获得连接
         AVCaptureConnection *captureConnection = [_captureMovieFileOutput connectionWithMediaType:AVMediaTypeVideo];
