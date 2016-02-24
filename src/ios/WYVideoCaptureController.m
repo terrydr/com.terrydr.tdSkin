@@ -311,7 +311,7 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
     [_cameraBtn setImage:[UIImage imageNamed:@"button_video_recording_default"] forState:UIControlStateNormal];
     _videoTimeView.hidden = YES;
     _currentTime = 0;
-    _toggleBtn.hidden = canPreview;
+    //_toggleBtn.hidden = canPreview;
     if (!canPreview) {
         [self videoTimeChanged:nil];
     }
@@ -428,7 +428,7 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
 //    [self.navigationController pushViewController:browserVc animated:YES];
 }
 - (void)retakeBtnClick:(UIButton *)btn {
-    _toggleBtn.hidden = NO;
+    //_toggleBtn.hidden = NO;
     [self videoTimeChanged:nil];
 }
 - (void)submitBtnClick:(UIButton *)btn {
