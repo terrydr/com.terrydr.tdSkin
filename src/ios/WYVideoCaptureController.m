@@ -336,7 +336,7 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
     
     _toggleBtn = [[UIButton alloc] init];
     [_toggleBtn setTitle:@"完成" forState:UIControlStateNormal];
-    [_toggleBtn addTarget:self action:@selector(closeBtnClick) forControlEvents:UIControlEventTouchUpInside];
+    [_toggleBtn addTarget:self action:@selector(takePhotosFinishClick) forControlEvents:UIControlEventTouchUpInside];
     
     _videoTimeView = [[WYVideoTimeView alloc] init];
     _videoTimeView.hidden = YES;
