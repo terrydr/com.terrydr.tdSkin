@@ -440,7 +440,7 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
 }
 
 - (void)takePhotosFinishClick{
-    NSDictionary *dic = [NSDictionary dictionaryWithObject:@"obj" forKey:@"key"];
+    NSDictionary *dic = [NSDictionary dictionaryWithObjectsAndKeys:_tokenPicturesPathArr,@"picture",_tokenVideosPathArr,@"video",nil];
     [[NSNotificationCenter defaultCenter] postNotificationName:@"TakePhotosFinishedNotification"
                                                         object:nil
                                                       userInfo:dic];
