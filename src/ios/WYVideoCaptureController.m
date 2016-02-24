@@ -472,6 +472,7 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
 }
 - (void)cameraBtnClick:(UIButton *)btn {
     if (_isPhoto) { /// 拍照
+        __weak WYVideoCaptureController *weakSelf = self;
         // 1.根据设备输出获得链接
         AVCaptureConnection *captureConnection = [_captureStillImageOutput connectionWithMediaType:AVMediaTypeVideo];
         // 2.根据链接取得设备输出的数据
@@ -479,8 +480,8 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
             NSData *imageData = [AVCaptureStillImageOutput jpegStillImageNSDataRepresentation:imageDataSampleBuffer];
             UIImage *image = [UIImage imageWithData:imageData];
             _imageView.image = [UIImage imageWithCGImage:[self handleImage:image]];
-            [self.tokenPicturesArr insertObject:image atIndex:0];
-            [self saveTakenPictureData:imageData];
+            [weakSelf.tokenPicturesArr insertObject:image atIndex:0];
+            [weakSelf saveTakenPictureData:imageData];
         }];
     }else{
         /// 视频
