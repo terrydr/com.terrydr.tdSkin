@@ -51,6 +51,8 @@
         <header-file src="src/ios/UIView+AutoLayoutViews.h" />
         <source-file src="src/ios/UIView+Extension.m" />
         <header-file src="src/ios/UIView+Extension.h" />
+        <source-file src="src/ios/JRMediaFileManage.m" />
+        <header-file src="src/ios/JRMediaFileManage.h" />
         <resource-file src="src/ios/button_camera_screen.png" />
         <resource-file src="src/ios/button_camera_screen@2x.png" />
         <resource-file src="src/ios/button_camera_screen@3x.png" />
