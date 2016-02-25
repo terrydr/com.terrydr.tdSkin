@@ -46,7 +46,7 @@
     if (cleanResult) {
         result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"clean successed!"];
     }else{
-        result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"clean error!"];
+        result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"clean error!"];
     }
     [self.commandDelegate sendPluginResult:result callbackId:callbackId];
 }
@@ -59,7 +59,7 @@
     if (cleanResult) {
         result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"clean successed!"];
     }else{
-        result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"clean error!"];
+        result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"clean error!"];
     }
     [self.commandDelegate sendPluginResult:result callbackId:callbackId];
 }
