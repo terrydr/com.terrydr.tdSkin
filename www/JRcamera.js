@@ -10,6 +10,7 @@ jrTakePhotos: function(successCallback, errorCallback) {
                  );
     
 }
+    ,
     
 jrCleanWithPath: function(filePath,successCallback, errorCallback) {
     console.log("jrCleanWithPath");
@@ -22,6 +23,7 @@ jrCleanWithPath: function(filePath,successCallback, errorCallback) {
                  );
     
 }
+    ,
     
 jrCleanAllData: function(successCallback, errorCallback) {
     console.log("jrCleanAllData");
