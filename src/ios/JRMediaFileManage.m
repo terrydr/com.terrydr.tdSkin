@@ -52,4 +52,28 @@
     return mediaPath;
 }
 
+//根据路径删除文件
+- (BOOL)deleteFileWithPath:(NSString *)filePath{
+    BOOL isDir = NO;
+    BOOL result = NO;
+    if([[NSFileManager defaultManager] fileExistsAtPath:filePath isDirectory:&isDir]) {
+        NSError *e = nil;
+        result = [[NSFileManager defaultManager] removeItemAtPath:filePath error:&e];
+    }
+    return result;
+}
+
+//删除所有文件
+- (BOOL)deleteAllFiles{
+    NSString *dir = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+    NSString *filePath = [dir stringByAppendingPathComponent:@"JRMedia"];
+    BOOL isDir = NO;
+    BOOL result = NO;
+    if([[NSFileManager defaultManager] fileExistsAtPath:filePath isDirectory:&isDir]) {
+        NSError *e = nil;
+        result = [[NSFileManager defaultManager] removeItemAtPath:filePath error:&e];
+    }
+    return result;
+}
+
 @end

@@ -15,5 +15,9 @@
 - (NSString *)getMediaId;
 //图片,视频存储路径
 - (NSString *)getJRMediaPathWithType:(BOOL)isPicture;
+//根据路径删除文件
+- (BOOL)deleteFileWithPath:(NSString *)filePath;
+//删除所有文件
+- (BOOL)deleteAllFiles;
 
 @end

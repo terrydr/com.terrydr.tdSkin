@@ -7,6 +7,7 @@
 //
 
 #import "JRcamera.h"
+#import "JRMediaFileManage.h"
 #import "WYVideoCaptureController.h"
 
 @interface JRcamera (){
@@ -34,6 +35,33 @@
     NSDictionary *pathDic = notify.userInfo;
     CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:pathDic];
     [self.commandDelegate sendPluginResult:result callbackId:_callbackId];
+}
+
+- (void)jrCleanDataWithPath:(CDVInvokedUrlCommand*)command{
+    NSString *callbackId = command.callbackId;
+    NSString *path = [command.arguments objectAtIndex:0];
+    JRMediaFileManage *fileManage = [JRMediaFileManage shareInstance];
+    BOOL cleanResult = [fileManage deleteFileWithPath:path];
+    CDVPluginResult* result;
+    if (cleanResult) {
+        result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"clean successed!"];
+    }else{
+        result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"clean error!"];
+    }
+    [self.commandDelegate sendPluginResult:result callbackId:callbackId];
+}
+
+- (void)jrCleanAllData:(CDVInvokedUrlCommand*)command{
+    NSString *callbackId = command.callbackId;
+    JRMediaFileManage *fileManage = [JRMediaFileManage shareInstance];
+    BOOL cleanResult = [fileManage deleteAllFiles];
+    CDVPluginResult* result;
+    if (cleanResult) {
+        result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"clean successed!"];
+    }else{
+        result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"clean error!"];
+    }
+    [self.commandDelegate sendPluginResult:result callbackId:callbackId];
 }
 
 @end
