@@ -11,7 +11,7 @@ jrTakePhotos: function(successCallback, errorCallback) {
     
 }
     
-jrCleanWithPath: function(successCallback, errorCallback,filePath) {
+jrCleanWithPath: function(filePath,successCallback, errorCallback) {
     console.log("jrCleanWithPath");
     cordova.exec(
                  successCallback,
