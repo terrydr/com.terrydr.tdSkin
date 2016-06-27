@@ -14,7 +14,7 @@
 #import "NSTimer+Addtion.h"
 #import "ProgressView.h"
 #import "UIView+AutoLayoutViews.h"
-#import "JRMediaFileManage.h"
+#import "TDMediaFileManage.h"
 //#import "MLSelectPhotoBrowserViewController.h"
 
 typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
@@ -531,9 +531,9 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
 }
 
 - (NSString *)getVideoSavedPath{
-    JRMediaFileManage *fileManage = [JRMediaFileManage shareInstance];
+    TDMediaFileManage *fileManage = [TDMediaFileManage shareInstance];
     NSString *videoId = [fileManage getMediaId];
-    NSString *filePath = [fileManage getJRMediaPathWithType:NO];
+    NSString *filePath = [fileManage getTDMediaPathWithType:NO];
     NSString *videoName = [NSString stringWithFormat:@"%@.mov",videoId];
     NSString *videoPath = [NSString stringWithFormat:@"%@/%@",filePath,videoName];
     _currentVideoPath = videoPath;
@@ -541,9 +541,9 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
 }
 
 - (void)saveTakenPictureData:(NSData *)imgData{
-    JRMediaFileManage *fileManage = [JRMediaFileManage shareInstance];
+    TDMediaFileManage *fileManage = [TDMediaFileManage shareInstance];
     NSString *picId = [fileManage getMediaId];
-    NSString *filePath = [fileManage getJRMediaPathWithType:YES];
+    NSString *filePath = [fileManage getTDMediaPathWithType:YES];
     NSString *imageName = [NSString stringWithFormat:@"%@.png",picId];
     NSString *imgPath = [NSString stringWithFormat:@"%@/%@",filePath,imageName];
     NSFileManager *fileManager = [NSFileManager defaultManager];

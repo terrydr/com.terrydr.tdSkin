@@ -1,24 +1,24 @@
 //
-//  JRcamera.m
-//  JRCamera
+//  TDCamera.m
+//  TDCamera
 //
 //  Created by 路亮亮 on 16/2/18.
 //
 //
 
-#import "JRcamera.h"
-#import "JRMediaFileManage.h"
+#import "TDCamera.h"
+#import "TDMediaFileManage.h"
 #import "WYVideoCaptureController.h"
 
-@interface JRcamera (){
+@interface TDCamera (){
     NSString *_callbackId;
 }
 
 @end
 
-@implementation JRcamera
+@implementation TDCamera
 
-- (void)jrTakePhotos:(CDVInvokedUrlCommand*)command{
+- (void)tdTakePhotos:(CDVInvokedUrlCommand*)command{
     
     _callbackId = command.callbackId;
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -37,10 +37,10 @@
     [self.commandDelegate sendPluginResult:result callbackId:_callbackId];
 }
 
-- (void)jrCleanDataWithPath:(CDVInvokedUrlCommand*)command{
+- (void)tdCleanDataWithPath:(CDVInvokedUrlCommand*)command{
     NSString *callbackId = command.callbackId;
     NSString *path = [command.arguments objectAtIndex:0];
-    JRMediaFileManage *fileManage = [JRMediaFileManage shareInstance];
+    TDMediaFileManage *fileManage = [TDMediaFileManage shareInstance];
     BOOL cleanResult = [fileManage deleteFileWithPath:path];
     CDVPluginResult* result;
     if (cleanResult) {
@@ -51,9 +51,9 @@
     [self.commandDelegate sendPluginResult:result callbackId:callbackId];
 }
 
-- (void)jrCleanAllData:(CDVInvokedUrlCommand*)command{
+- (void)tdCleanAllData:(CDVInvokedUrlCommand*)command{
     NSString *callbackId = command.callbackId;
-    JRMediaFileManage *fileManage = [JRMediaFileManage shareInstance];
+    TDMediaFileManage *fileManage = [TDMediaFileManage shareInstance];
     BOOL cleanResult = [fileManage deleteAllFiles];
     CDVPluginResult* result;
     if (cleanResult) {

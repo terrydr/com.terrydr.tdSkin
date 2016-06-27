@@ -2,10 +2,10 @@
 
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
-        id="cordova-plugin-jrcamera"
+        id="cordova-plugin-skinCamera"
         version="0.4.2">
     
-    <name>JRCamera</name>
+    <name>TDCamera</name>
     
     <description>This plugin for Cordova and PhoneGap allows you to check if an app is installed. It requires an URI Scheme (iOS) or a Package Name (Android).</description>
     
@@ -20,19 +20,19 @@
         <engine name="cordova" version=">=3.0.0" />
     </engines>
     
-    <js-module src="www/JRCamera.js" name="JRCamera">
-        <clobbers target="jrcamera" />
+    <js-module src="www/TDCamera.js" name="TDCamera">
+        <clobbers target="tdcamera" />
     </js-module>
     
     <platform name="ios">
         <config-file  target="config.xml" parent="/*">
-            <feature  name="JRcamera">
-                <param  name="ios-package"  value="JRcamera"/>
+            <feature  name="TDcamera">
+                <param  name="ios-package"  value="TDcamera"/>
             </feature>
         </config-file>
         
-        <source-file src="src/ios/JRCamera.m" />
-        <header-file src="src/ios/JRCamera.h" />
+        <source-file src="src/ios/TDCamera.m" />
+        <header-file src="src/ios/TDCamera.h" />
         <source-file src="src/ios/WYCaptureController.m" />
         <header-file src="src/ios/WYCaptureController.h" />
         <source-file src="src/ios/WYTopImgBtn.m" />
@@ -51,8 +51,8 @@
         <header-file src="src/ios/UIView+AutoLayoutViews.h" />
         <source-file src="src/ios/UIView+Extension.m" />
         <header-file src="src/ios/UIView+Extension.h" />
-        <source-file src="src/ios/JRMediaFileManage.m" />
-        <header-file src="src/ios/JRMediaFileManage.h" />
+        <source-file src="src/ios/TDMediaFileManage.m" />
+        <header-file src="src/ios/TDMediaFileManage.h" />
         <resource-file src="src/ios/button_camera_screen.png" />
         <resource-file src="src/ios/button_camera_screen@2x.png" />
         <resource-file src="src/ios/button_camera_screen@3x.png" />

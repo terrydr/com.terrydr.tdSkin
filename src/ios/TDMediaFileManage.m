@@ -1,21 +1,21 @@
 //
-//  JRMediaFileManage.m
-//  JRCamera
+//  TDMediaFileManage.m
+//  TDCamera
 //
 //  Created by 路亮亮 on 16/2/24.
 //
 //
 
-#import "JRMediaFileManage.h"
+#import "TDMediaFileManage.h"
 
-@implementation JRMediaFileManage
+@implementation TDMediaFileManage
 
-+ (JRMediaFileManage*)shareInstance
++ (TDMediaFileManage*)shareInstance
 {
     static dispatch_once_t onceToken;
-    static JRMediaFileManage* interface = nil;
+    static TDMediaFileManage* interface = nil;
     dispatch_once(&onceToken, ^{
-        interface = [[JRMediaFileManage alloc]init];
+        interface = [[TDMediaFileManage alloc]init];
     });
     return interface;
 }
@@ -28,9 +28,9 @@
 }
 
 //图片,视频存储路径
-- (NSString *)getJRMediaPathWithType:(BOOL)isPicture{
+- (NSString *)getTDMediaPathWithType:(BOOL)isPicture{
     NSString *dir = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
-    NSString *path = [dir stringByAppendingPathComponent:@"JRMedia"];
+    NSString *path = [dir stringByAppendingPathComponent:@"TDMedia"];
     BOOL isDir = NO;
     if(![[NSFileManager defaultManager] fileExistsAtPath:path isDirectory:&isDir]) {
         NSError *e = nil;
@@ -66,7 +66,7 @@
 //删除所有文件
 - (BOOL)deleteAllFiles{
     NSString *dir = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
-    NSString *filePath = [dir stringByAppendingPathComponent:@"JRMedia"];
+    NSString *filePath = [dir stringByAppendingPathComponent:@"TDMedia"];
     BOOL isDir = NO;
     BOOL result = NO;
     if([[NSFileManager defaultManager] fileExistsAtPath:filePath isDirectory:&isDir]) {
