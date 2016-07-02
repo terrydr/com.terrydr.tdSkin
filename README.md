@@ -1,7 +1,9 @@
-插件名称：com.terrydr.tdSkin
-
-功能描述：拍照 
+cordova-plugin-skinCamera
+--------------------------
+####皮肤相机拍摄插件
 
 支持平台：iOS 
 
-用于：泰瑞皮肤
+安装：cordova plugin add https://github.com/terrydr/com.terrydr.tdSkin.git
+
+卸载：cordova plugin rm cordova-plugin-skinCamera
